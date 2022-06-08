@@ -34,6 +34,8 @@ async function websocket(expressServer) {
             websocketConnection.on("message", (message) => {
                 const parsedMessage = JSON.parse(message);
                 websocketConnection.send(JSON.stringify({ message: parsedMessage.message + '🤗' }));
+                //закрываем соединение на стороне серверва если юзер написал "close"
+                if( parsedMessage.message == 'close' ) websocketConnection.close(1000,JSON.stringify({message: 'connection closed'}))
             });
         }
     );

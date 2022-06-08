@@ -1,9 +1,25 @@
 // подключение к сокету
-const websocket = new WebSocket('ws://localhost:5001/websockets')
+let websocket = new WebSocket('ws://localhost:5001/websockets')
 
 //обработчик собития подключения к сокету
 websocket.onopen = () => {
     console.log('success')
+}
+
+websocket.onclose = (message) => {
+    console.log('connection closed')
+    console.log(message)
+    const message_text = JSON.parse(message.reason)
+        // создаем блок для отображения сообщения от сервера
+    let div = document.createElement('div')
+    div.style.width = '450px'
+    div.style.textAlign = 'right'
+    div.style.marginTop = '5px'
+        //добавляем в блок сообщение
+    div.innerHTML = message_text.message
+        //прикрепляем блок с нашему блоку с сообщениями
+    messages.append(div)
+
 }
 
 const messages = document.getElementById('messages')
@@ -25,6 +41,7 @@ websocket.onmessage = (message) => {
 
 const button = document.getElementById('button')
 const input = document.getElementById('input')
+const button_close = document.getElementById('button_close')
 
 button.addEventListener('click', (ev) => {
     ev.preventDefault()
@@ -45,4 +62,10 @@ button.addEventListener('click', (ev) => {
             // обнуляем значение инпута для дальшейшего ввода
         input.value = ''
     }
+})
+
+button_close.addEventListener('click', (ev) => {
+    ev.preventDefault()
+        // закрываем сооединение на стороне клиента
+    websocket.close(1000, JSON.stringify({ message: 'connection closed by client' }))
 })
